@@ -3,13 +3,10 @@ export type OrderStatus = "Yeni" | "Onaylandı" | "Hazırlanıyor" | "Tamamland�
 export type ProductOrder = {
   id?: number;
   full_name: string;
-  product: "Tişört" | "Polar";
-  department: "NETWORK" | "SECURITY" | "SYSTEM";
-  color: string;
-  size: string;
-  design_variant: number;
-  quantity: number;
-  note: string;
+  tshirt_design: number;
+  tshirt_size: string;
+  polar_design: number;
+  polar_size: string;
   status?: OrderStatus;
   created_at?: string;
 };

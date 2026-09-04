@@ -1,116 +1,55 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import type { ProductOrder } from "@/lib/types";
 
-const colors = [
-  { name: "Siyah", value: "#111315" },
-  { name: "Lacivert", value: "#101d36" },
-  { name: "Antrasit", value: "#343638" },
-  { name: "Beyaz", value: "#f4f4f1" },
-  { name: "Kırık Beyaz", value: "#ebe7dc" },
-];
-
-const initial: ProductOrder = {
-  full_name: "",
-  product: "Tişört",
-  department: "NETWORK",
-  color: "Siyah",
-  size: "M",
-  design_variant: 1,
-  quantity: 1,
-  note: "",
-};
+const sizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+const models = [1, 2, 3, 4, 5];
+const initial: ProductOrder = { full_name: "", tshirt_design: 0, tshirt_size: "", polar_design: 0, polar_size: "" };
 
 export default function HomePage() {
-  const [form, setForm] = useState(initial);
+  const [form, setForm] = useState<ProductOrder>(initial);
   const [state, setState] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const selectedColor = useMemo(() => colors.find((item) => item.name === form.color)!, [form.color]);
-  const light = ["Beyaz", "Kırık Beyaz"].includes(form.color);
 
   function update<K extends keyof ProductOrder>(key: K, value: ProductOrder[K]) {
     setForm((current) => ({ ...current, [key]: value }));
-    setState("idle");
+    setState("idle"); setMessage("");
   }
 
   async function submit(event: FormEvent) {
-    event.preventDefault();
-    setState("saving");
-    setMessage("");
+    event.preventDefault(); setState("saving"); setMessage("");
     try {
-      const response = await fetch("/api/requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const response = await fetch("/api/requests", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      setState("success");
-      setMessage("Tercihiniz başarıyla kaydedildi.");
-      setForm((current) => ({ ...initial, department: current.department, product: current.product }));
+      setState("success"); setMessage("Seçiminiz başarıyla kaydedildi."); setForm(initial);
     } catch (error) {
-      setState("error");
-      setMessage(error instanceof Error ? error.message : "Kayıt yapılamadı.");
+      setState("error"); setMessage(error instanceof Error ? error.message : "Kayıt yapılamadı.");
     }
   }
 
-  return (
-    <main className="page-shell">
-      <header className="topbar">
-        <div className="brand-mark">SGDB</div>
-        <div>
-          <p className="eyebrow">CYBER SECURITY DEPARTMENT</p>
-          <h1>Ürün Tasarım Merkezi</h1>
-        </div>
-        <Link className="admin-link" href="/admin">Yönetim</Link>
-      </header>
+  const complete = form.full_name.trim().length >= 3 && form.tshirt_design > 0 && !!form.tshirt_size && form.polar_design > 0 && !!form.polar_size;
 
-      <section className="workspace">
-        <form className="config-panel" onSubmit={submit}>
-          <div className="section-heading">
-            <span>01</span>
-            <div><h2>Ürününü oluştur</h2><p>Tercihlerini seç ve kaydet.</p></div>
-          </div>
+  return <main className="page-shell">
+    <header className="topbar"><div className="brand-mark">SGDB</div><div><p className="eyebrow">CYBER SECURITY DEPARTMENT</p><h1>Ürün Seçim Formu</h1></div><Link className="admin-link" href="/admin">Yönetim</Link></header>
+    <form className="selection-form" onSubmit={submit}>
+      <section className="identity-card"><div><span className="step">01</span><h2>Bilgilerin</h2><p>Ad ve soyad alanı zorunludur.</p></div><label>Ad Soyad<input required minLength={3} maxLength={80} value={form.full_name} onChange={(e) => update("full_name", e.target.value)} placeholder="Adınızı ve soyadınızı yazın" /></label></section>
 
-          <div className="segmented" aria-label="Ürün türü">
-            {(["Tişört", "Polar"] as const).map((item) => (
-              <button type="button" className={form.product === item ? "active" : ""} onClick={() => update("product", item)} key={item}>{item}</button>
-            ))}
-          </div>
-
-          <label>Ad Soyad<input required maxLength={80} value={form.full_name} onChange={(e) => update("full_name", e.target.value)} placeholder="Adınızı ve soyadınızı yazın" /></label>
-
-          <div className="form-row">
-            <label>Birim<select value={form.department} onChange={(e) => update("department", e.target.value as ProductOrder["department"])}><option>NETWORK</option><option>SECURITY</option><option>SYSTEM</option></select></label>
-            <label>Beden<select value={form.size} onChange={(e) => update("size", e.target.value)}>{["XS", "S", "M", "L", "XL", "2XL", "3XL"].map((s) => <option key={s}>{s}</option>)}</select></label>
-          </div>
-
-          <fieldset><legend>Renk</legend><div className="color-list">{colors.map((color) => <button type="button" key={color.name} onClick={() => update("color", color.name)} className={form.color === color.name ? "color-option selected" : "color-option"}><span style={{ background: color.value }} />{color.name}</button>)}</div></fieldset>
-
-          <div className="form-row">
-            <label>Tasarım<select value={form.design_variant} onChange={(e) => update("design_variant", Number(e.target.value))}>{[1, 2, 3, 4, 5].map((v) => <option value={v} key={v}>Model {v}</option>)}</select></label>
-            <label>Adet<input type="number" min={1} max={10} value={form.quantity} onChange={(e) => update("quantity", Number(e.target.value))} /></label>
-          </div>
-          <label>Not <span className="optional">isteğe bağlı</span><textarea maxLength={300} value={form.note} onChange={(e) => update("note", e.target.value)} placeholder="Eklemek istediğiniz bir detay varsa yazın" /></label>
-          <button className="save-button" disabled={state === "saving"}>{state === "saving" ? "Kaydediliyor…" : "Tercihimi kaydet"}</button>
-          {message && <p className={`notice ${state}`} role="status">{message}</p>}
-        </form>
-
-        <aside className="preview-panel">
-          <div className="preview-meta"><span>CANLI ÖNİZLEME</span><span>MODEL {form.design_variant}</span></div>
-          <div className={`garment-card ${form.product === "Polar" ? "polar" : "tshirt"}`} style={{ backgroundColor: selectedColor.value, color: light ? "#12213a" : "#f4f5f7" }}>
-            <div className="garment-neck" />
-            <div className="garment-copy"><strong>SGDB</strong><small>{form.department}</small></div>
-            {form.full_name && <div className="name-preview">{form.full_name.toUpperCase()}</div>}
-          </div>
-          <div className="selection-card">
-            <div><span>Ürün</span><strong>{form.product}</strong></div><div><span>Renk</span><strong>{form.color}</strong></div><div><span>Beden</span><strong>{form.size}</strong></div><div><span>Adet</span><strong>{form.quantity}</strong></div>
-          </div>
-          <p className="preview-note">Önizleme yerleşimi temsilidir. Nihai baskı üretim ölçülerine göre hazırlanır.</p>
-        </aside>
+      <section className="product-section">
+        <div className="section-title"><span className="step">02</span><div><h2>Bir tişört seç</h2><p>Beş tasarımdan yalnızca birini seçebilirsin.</p></div></div>
+        <div className="design-grid">{models.map((model) => <button type="button" key={model} className={`design-card ${form.tshirt_design === model ? "selected" : ""}`} onClick={() => update("tshirt_design", model)}><img src={`/images/tshirt-${model}.png`} alt={`Tişört tasarımı ${model}`} /><span><strong>Tişört {model}</strong><em>{form.tshirt_design === model ? "Seçildi" : "Seç"}</em></span></button>)}</div>
+        <label className="size-field">Tişört bedeni<select required value={form.tshirt_size} onChange={(e) => update("tshirt_size", e.target.value)}><option value="">Beden seçin</option>{sizes.map((size) => <option key={size}>{size}</option>)}</select></label>
       </section>
-    </main>
-  );
+
+      <section className="product-section">
+        <div className="section-title"><span className="step">03</span><div><h2>Bir polar seç</h2><p>Beş tasarımdan yalnızca birini seçebilirsin.</p></div></div>
+        <div className="design-grid polar-grid">{models.map((model) => <button type="button" key={model} className={`design-card ${form.polar_design === model ? "selected" : ""}`} onClick={() => update("polar_design", model)}><div className="polar-shot"><img src="/images/polar-catalog.png" alt={`Polar tasarımı ${model}`} style={{ transform: `translateX(-${(model - 1) * 20}%)` }} /></div><span><strong>Polar {model}</strong><em>{form.polar_design === model ? "Seçildi" : "Seç"}</em></span></button>)}</div>
+        <label className="size-field">Polar bedeni<select required value={form.polar_size} onChange={(e) => update("polar_size", e.target.value)}><option value="">Beden seçin</option>{sizes.map((size) => <option key={size}>{size}</option>)}</select></label>
+      </section>
+
+      <section className="checkout-card"><div><span>Tişört</span><strong>{form.tshirt_design ? `Model ${form.tshirt_design} · ${form.tshirt_size || "Beden bekleniyor"}` : "Seçilmedi"}</strong></div><div><span>Polar</span><strong>{form.polar_design ? `Model ${form.polar_design} · ${form.polar_size || "Beden bekleniyor"}` : "Seçilmedi"}</strong></div><button className="save-button" disabled={state === "saving" || !complete}>{state === "saving" ? "Kaydediliyor…" : "Seçimlerimi kaydet"}</button>{message && <p className={`notice ${state}`} role="status">{message}</p>}</section>
+    </form>
+  </main>;
 }

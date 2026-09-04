@@ -12,6 +12,27 @@ h1,h2,p { margin-top:0; }
 h1 { font-size:clamp(25px,3vw,38px);margin-bottom:0;letter-spacing:-.03em; }
 .admin-link,.admin-header a { margin-left:auto;color:var(--text);text-decoration:none;border:1px solid var(--line);padding:10px 15px;border-radius:10px; }
 .workspace { display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.85fr);gap:24px;padding-top:24px; }
+.selection-form { display:grid;gap:22px;padding-top:24px; }
+.identity-card,.product-section,.checkout-card { background:linear-gradient(160deg,rgba(20,36,58,.94),rgba(11,24,40,.96));border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.2);border-radius:18px;padding:26px; }
+.identity-card { display:grid;grid-template-columns:1fr minmax(280px,480px);gap:28px;align-items:end; }
+.identity-card h2,.section-title h2 { margin:4px 0 4px; }
+.identity-card p,.section-title p { color:var(--muted);margin:0; }
+.step { color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.14em; }
+.section-title { display:flex;gap:14px;align-items:flex-start;margin-bottom:20px; }
+.design-grid { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px; }
+.design-card { padding:0;overflow:hidden;text-align:left;color:var(--text);border:1px solid var(--line);border-radius:13px;background:#081523;cursor:pointer;transition:.2s ease; }
+.design-card:hover { transform:translateY(-2px);border-color:rgba(47,197,220,.55); }
+.design-card.selected { border-color:var(--gold);box-shadow:0 0 0 2px rgba(215,168,74,.25); }
+.design-card>img { display:block;width:100%;aspect-ratio:1/1.05;object-fit:cover; }
+.design-card>span { display:flex;justify-content:space-between;align-items:center;padding:12px; }
+.design-card em { color:var(--cyan);font-size:12px;font-style:normal;font-weight:800; }
+.polar-shot { position:relative;overflow:hidden;width:100%;aspect-ratio:.76;background:#dad8d2; }
+.polar-shot img { position:absolute;left:0;top:0;width:500%;max-width:none;height:auto; }
+.size-field { width:min(300px,100%);margin-top:20px; }
+.checkout-card { display:grid;grid-template-columns:1fr 1fr auto;gap:18px;align-items:center; }
+.checkout-card span { display:block;color:var(--muted);font-size:12px;margin-bottom:4px; }
+.checkout-card .save-button { width:auto;min-width:220px;margin:0; }
+.checkout-card .notice { grid-column:1/-1;margin:0; }
 .config-panel,.preview-panel,.login-card,.table-wrap,.stats article { background:linear-gradient(160deg,rgba(20,36,58,.94),rgba(11,24,40,.96));border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.24); }
 .config-panel,.preview-panel { padding:28px;border-radius:18px; }
 .section-heading { display:flex;gap:14px;align-items:center;margin-bottom:22px; }
@@ -70,5 +91,6 @@ th { color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.
 td small { display:block;color:var(--muted);margin-top:5px;max-width:220px; }
 td select { margin:0;min-width:130px;padding:8px; }
 .empty { text-align:center;color:var(--muted);padding:35px; }
-@media (max-width:850px) { .workspace{grid-template-columns:1fr}.preview-panel{position:relative;top:0;grid-row:1}.topbar{align-items:flex-start}.brand-mark{width:52px;height:52px}.admin-link{font-size:0;padding:10px}.admin-link:after{content:"Yönetim";font-size:14px}.stats{grid-template-columns:1fr 1fr}.stats article:last-child{grid-column:1/-1}.admin-actions{align-items:flex-start;flex-direction:column}.filters{width:100%}.admin-actions>button{width:100%} }
-@media (max-width:520px) { .page-shell,.admin-shell{width:min(100% - 20px,1240px);padding-top:16px}.topbar{gap:10px}.topbar .eyebrow{font-size:9px}.topbar h1{font-size:21px}.config-panel,.preview-panel{padding:18px;border-radius:14px}.form-row{grid-template-columns:1fr}.selection-card{grid-template-columns:1fr 1fr}.garment-card{width:94%}.color-option{font-size:13px} }
+@media (max-width:1000px) { .design-grid{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:850px) { .workspace{grid-template-columns:1fr}.preview-panel{position:relative;top:0;grid-row:1}.identity-card{grid-template-columns:1fr}.checkout-card{grid-template-columns:1fr 1fr}.checkout-card .save-button{grid-column:1/-1;width:100%}.topbar{align-items:flex-start}.brand-mark{width:52px;height:52px}.admin-link{font-size:0;padding:10px}.admin-link:after{content:"Yönetim";font-size:14px}.stats{grid-template-columns:1fr 1fr}.stats article:last-child{grid-column:1/-1}.admin-actions{align-items:flex-start;flex-direction:column}.filters{width:100%}.admin-actions>button{width:100%} }
+@media (max-width:520px) { .page-shell,.admin-shell{width:min(100% - 20px,1240px);padding-top:16px}.topbar{gap:10px}.topbar .eyebrow{font-size:9px}.topbar h1{font-size:21px}.identity-card,.product-section,.checkout-card{padding:17px;border-radius:14px}.design-grid{grid-template-columns:1fr 1fr}.checkout-card{grid-template-columns:1fr}.checkout-card .save-button{grid-column:auto}.form-row{grid-template-columns:1fr} }
