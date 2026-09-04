@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { ProductOrder } from "@/lib/types";
 
 const sizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
-const models = [1, 2, 3, 4, 5];
+const models = Array.from({ length: 20 }, (_, index) => index + 1);
 const initial: ProductOrder = { full_name: "", tshirt_design: 0, tshirt_size: "", polar_design: 0, polar_size: "" };
 
 function ZoomIcon() { return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg>; }
@@ -67,7 +67,7 @@ export default function HomePage() {
       <div className="design-grid">
         {models.map((model) => <article key={model} className={`design-card ${selected === model ? "selected" : ""}`}>
           <button type="button" className="image-button" onClick={() => setModal({ kind, model })} aria-label={`${name} ${model} ön ve arka görünüşünü büyüt`}>
-            <span className="product-image" style={{ backgroundImage: `url(/images/web/${kind}-${model}.webp)` }} />
+            <span className="product-image" style={{ backgroundImage: `url(/images/catalog/${kind}-${String(model).padStart(2, "0")}.webp)` }} />
             <span className="view-tags"><span>ÖN</span><span>ARKA</span></span>
             <span className="zoom-hint"><ZoomIcon /><span className="sr-only">Görseli büyüt</span></span>
           </button>
@@ -117,7 +117,7 @@ export default function HomePage() {
     {modal && <div className="modal-backdrop" role="presentation" onMouseDown={() => setModal(null)}>
       <section className="image-modal" role="dialog" aria-modal="true" aria-label={`${modal.kind === "tshirt" ? "Tişört" : "Polar"} ${modal.model} büyük görünüş`} onMouseDown={(event) => event.stopPropagation()}>
         <header><div><span>{modal.kind === "tshirt" ? "TİŞÖRT" : "POLAR"} • MODEL {String(modal.model).padStart(2, "0")}</span><h2>Ön ve arka görünüş</h2></div><button type="button" onClick={() => setModal(null)} aria-label="Pencereyi kapat">×</button></header>
-        <div className="modal-image" role="img" aria-label={`${modal.kind === "tshirt" ? "Tişört" : "Polar"} ${modal.model} tam görünüş`} style={{ backgroundImage: `url(/images/web/${modal.kind}-${modal.model}.webp)` }}><span className="modal-side modal-front">ÖN</span><span className="modal-side modal-back">ARKA</span></div>
+        <div className="modal-image" role="img" aria-label={`${modal.kind === "tshirt" ? "Tişört" : "Polar"} ${modal.model} tam görünüş`} style={{ backgroundImage: `url(/images/catalog/${modal.kind}-${String(modal.model).padStart(2, "0")}.webp)` }}><span className="modal-side modal-front">ÖN</span><span className="modal-side modal-back">ARKA</span></div>
         <button type="button" className="modal-select" onClick={() => { update(modal.kind === "tshirt" ? "tshirt_design" : "polar_design", modal.model); setModal(null); }}>Bu modeli seç <ArrowIcon /></button>
       </section>
     </div>}
